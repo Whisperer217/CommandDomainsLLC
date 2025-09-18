@@ -84,8 +84,15 @@ DeepSeek-R1 evaluation frameworks
 
 Anthropic’s Helpful, Harmless, Honest principles
 
-📜 License
-MIT License — free to use, adapt, and build upon with attribution.
+## 📜 License
+
+This repository contains both **open content** and **patent-pending intellectual property**.  
+
+- The **DDGP Framework** (Doctrine → Distortion → Gems → Pearls) and associated testimonial metrics are currently **protected under a provisional U.S. patent application**.  
+- Other project materials (e.g., Codex entries, public documentation) are released under a **Creative Commons Attribution 4.0 (CC BY 4.0) license** unless otherwise noted.  
+- Software code in this repository is released under the **Apache 2.0 License**, permitting use and modification with proper attribution.  
+
+**Note:** Any commercial application of the DDGP Framework or derivative tools must respect the provisional patent and is subject to licensing agreements with Command Domains, LLC.
 
 📣 Contact
 Founder: SFC Jacob Ross
