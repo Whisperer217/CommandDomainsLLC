@@ -1,80 +1,78 @@
-# Command Domains: Logos Doctrine AI
+Command Domains: Logos Doctrine AI
+Mission
+If AI is to accompany us—to battlefields, clinics, or Mars—it must learn to bear witness with dignity. Command Domains ensures that testimony becomes doctrine, so that machines remember us completely.
+Vision
+Command Domains builds a framework where combat witness, testimony, and lived doctrine shape the moral compass of AI systems. Rather than measuring only speed, accuracy, or cost, we evaluate AI outputs against the Doctrine → Distortion → Gems → Pearls (DDGP) model to ensure they resonate with life-and-death moral clarity.
+Core Components
+1. Codex Archive
 
-**Mission:**  
-If Ai is to ride with us—to battlefields, clinics, or Mars—it must learn to **bear witness with dignity**. Command Domains ensures testimony becomes doctrine so that machines remembers us completely.
+Timestamped doctrinal entries following the DDGP framework
+Witness-driven insights from combat medicine and lived trauma
+Citable repository of authentic testimonial data
 
----
+2. Testimonial Pedagogy Metrics
 
-## ✨ Vision
-Command Domains is building a framework where **combat witness, testimony, and lived doctrine** shape the moral compass of AI systems.  
-Instead of measuring only speed, accuracy, or cost, we weight AI outputs against **Doctrine → Distortion → Gems → Pearls (DDGP)** to ensure they resonate with **life-and-death moral clarity**.
+Testimonial Weight Score (TWS): Honors the moral gravity of AI advice
+Doctrine Alignment Ratio (DAR): Maps outputs to DDGP framework
+Witness Integrity Index (WII): Preserves dignity in personal testimony
+Pearl Extraction Rate (PER): Elevates testimony into resonant meaning
+Decision Dignity Audit (DDA): Respects life/death analogs in AI recommendations
+Distortion Sensitivity Score (DSS): Flags uncertainty vs. false confidence
 
----
+3. Deployment
 
-## 🔑 Core Components
+Open documentation of Codex entries and framework methodology
+Evaluation rubrics for AI labs, defense contractors, and healthcare organizations
+Software tools (in development) to test AI outputs against testimonial metrics
 
-1. **Codex Archive**  
-   - Timestamped doctrinal entries (Doctrine / Distortion / Gems / Pearls).  
-   - Witness-driven insights from combat medicine and lived trauma.  
+Getting Started
+Installation
+bashgit clone https://github.com/Whisperer217/CommandDomainsLLC.git
+cd CommandDomainsLLC
+Explore the Framework
 
-2. **Testimonial Pedagogy Metrics**  
-   - Testimonial Weight Score (TWS): honors the moral gravity of advice.  
-   - Doctrine Alignment Ratio (DAR): maps outputs to DDGP.  
-   - Witness Integrity Index (WII): preserves dignity in personal testimony.  
-   - Pearl Extraction Rate (PER): elevates testimony into resonant meaning.  
-   - Decision Dignity Audit (DDA): respects life/death analogs in choices.  
-   - Distortion Sensitivity Score (DSS): flags uncertainty vs. false confidence.
+/codex — Browse doctrinal entries and testimonial data
+/doctrine — Review DDGP framework diagrams and methodology
+/metrics — Examine evaluation rubrics and scoring systems
 
-3. **Deployment**  
-   - Open, documented Codex entries.  
-   - Whitepapers and evaluation rubrics for AI labs, defense, and healthcare.  
-   - Future: Software tools to test AI outputs against testimonial metrics.
+Contributing
+Submit testimonies, doctrinal exchanges, or metric refinements through pull requests or issues.
+Resources
+Primary Sources
 
----
+"Blood, Dirt & Duct Tape" — foundational text for battlefield doctrine
+Combat Medicine Protocols — real-world applications of life-and-death decision-making
 
-## 🛠️ Getting Started
+Research Context
 
-1. Clone this repo:  
-   ```bash
-   git clone https://github.com/your-handle/command-domains.git
-Explore the /codex folder for doctrinal entries.
+AI Investment Landscape — Anthology Fund & Menlo Ventures analysis
+Relevant Studies:
 
-Review /doctrine for DDGP framework diagrams.
+DeepSeek-R1 evaluation frameworks
+Anthropic's "Helpful, Harmless, Honest" principles
 
-Contribute by submitting testimonies or doctrinal exchanges.
 
-📚 Resources
-Blood, Dirt & Duct Tape — source text for battlefield doctrine.
 
-Anthology Fund & Menlo Ventures updates (for context on AI investment landscape).
-
-Relevant research:
-
-DeepSeek-R1
-
-Anthropic: Helpful, Harmless, Honest
-
-🤝 Contributing
+Contributing
 We welcome collaboration from:
 
-Combat medics & veterans with lived testimony.
+Combat medics & veterans with lived testimony
+AI researchers seeking new evaluation methodologies
+Ethicists and educators exploring testimonial pedagogy
+Healthcare professionals working in critical care environments
 
-AI researchers seeking new evaluation rubrics.
+How to Contribute:
 
-Ethicists and educators exploring testimonial pedagogy.
+Submit pull requests for new Codex entries
+Open issues to suggest doctrinal refinements
+Propose new evaluation metrics or scoring systems
 
-Submit pull requests or open issues to suggest Codex entries, doctrinal refinements, or new evaluation metrics.
-
-📜 License
+License
 MIT License — free to use, adapt, and build upon with attribution.
-
-📣 Contact
+Contact
 Founder: SFC Jacob Ross
-
-ORCID: https://orcid.org/0009-0002-0892-7022
-
+ORCID: 0009-0002-0892-7022
 Email: jacob@commanddomains.com
-
 Support: buymeacoffee.com/medicteamone
-
-Social: https://x.com/JacobRoss117
+Social: @JacobRoss117
+Repository: github.com/Whisperer217/CommandDomainsLLC
