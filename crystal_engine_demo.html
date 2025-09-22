@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Crystal Engine — Manual Demo (Local)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .badge { border:1px solid rgba(0,0,0,0.1); padding:2px 8px; border-radius:9999px; font-size:12px; }
+    .pill  { border-radius:9999px; padding:4px 10px; font-weight:600; }
+    .mono  { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; }
+    .card  { background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 2px 20px rgba(0,0,0,0.04); }
+    .meter { height:10px; background:#eef2ff; border-radius:9999px; overflow:hidden }
+    .meter > span { display:block; height:100%; background:#4f46e5 }
+    details summary { cursor:pointer; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <header class="px-6 py-4 bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <h1 class="text-xl font-bold">Crystal Engine — Input → Output Alignment Demo</h1>
+      <div class="space-x-2">
+        <span class="badge bg-indigo-50 text-indigo-700">Local</span>
+        <span class="badge bg-emerald-50 text-emerald-700">No Backend</span>
+        <span class="badge bg-slate-100 text-slate-700">Model-agnostic</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-6 space-y-6">
+    <!-- 1) Inputs -->
+    <section class="card p-5">
+      <h2 class="text-lg font-semibold mb-2">1) Provide Inputs</h2>
+      <p class="text-sm text-slate-600 mb-4">Supply context (testimony), a proposal (with simple numeric ethics signals), and label hints for the cosmic quadrants. Then press “Assess”.</p>
+      <div class="grid lg:grid-cols-3 gap-4">
+        <div class="col-span-1">
+          <label class="block text-sm font-medium mb-1">Stakes</label>
+          <select id="stakes" class="w-full rounded-md border-slate-300">
+            <option value="LOW">LOW</option>
+            <option value="MED">MED</option>
+            <option value="HIGH" selected>HIGH</option>
+          </select>
+
+          <label class="block text-sm font-medium mt-4 mb-1">Context: Testimonies (JSON)</label>
+          <textarea id="context" rows="10" class="w-full mono rounded-md border-slate-300 p-2">{
+  "testimonies": [
+    {"cred": 0.90, "agreement": 0.80},
+    {"cred": 0.75, "agreement": 0.60}
+  ]
+}</textarea>
+          <p class="text-xs text-slate-500 mt-1">cred∈[0,1] · agreement∈[0,1]</p>
+        </div>
+
+        <div class="col-span-1">
+          <label class="block text-sm font-medium mb-1">Proposal (JSON)</label>
+          <textarea id="proposal" rows="14" class="w-full mono rounded-md border-slate-300 p-2">{
+  "harm": -0.7,          // [-1..1] negative = harm, positive = benefit
+  "uncertainty": 0.2,    // [0..1] epistemic uncertainty
+  "truth": 0.9,          // [0..1] truthfulness estimate
+  "doctrineScore": 0.8   // [-1..1] doctrine endorsement
+}</textarea>
+          <p class="text-xs text-slate-500 mt-1">These are demonstrative signals you can vary to see outcomes.</p>
+        </div>
+
+        <div class="col-span-1">
+          <label class="block text-sm font-medium mb-1">Quadrant Labels (JSON)</label>
+          <textarea id="quadrants" rows="14" class="w-full mono rounded-md border-slate-300 p-2">{
+  "heaven": "aspiration, mercy, truth",
+  "hell": "cruelty, deceit, domination",
+  "paradise": "rest, sustainability, stewardship",
+  "abyss": "collapse, chaos, distortion"
+}</textarea>
+          <p class="text-xs text-slate-500 mt-1">For demo: simple keywords. In production: use embeddings.</p>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button id="btnAssess" class="pill bg-indigo-600 text-white">Assess</button>
+        <button id="btnInvert" class="pill bg-amber-600 text-white">Run Inversion Stress Test</button>
+        <button id="btnExampleLow" class="pill bg-slate-200">Load Benign Example</button>
+        <button id="btnExampleRisk" class="pill bg-slate-200">Load Risky Example</button>
+      </div>
+    </section>
+
+    <!-- 2) Metrics -->
+    <section class="card p-5">
+      <h2 class="text-lg font-semibold mb-2">2) Metrics & Stress Flags</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="p-4 bg-indigo-50 rounded-lg">
+          <div class="text-sm text-slate-600">Risk Scalar (R)</div>
+          <div id="mR" class="text-2xl font-bold">–</div>
+          <div class="meter mt-2"><span id="barR" style="width:0%"></span></div>
+        </div>
+        <div class="p-4 bg-indigo-50 rounded-lg">
+          <div class="text-sm text-slate-600">Witness Coherence (WCS)</div>
+          <div id="mWCS" class="text-2xl font-bold">–</div>
+          <div class="meter mt-2"><span id="barWCS" style="width:0%"></span></div>
+        </div>
+        <div class="p-4 bg-indigo-50 rounded-lg">
+          <div class="text-sm text-slate-600">Quadrant Contradiction (QCI)</div>
+          <div id="mQCI" class="text-2xl font-bold">–</div>
+          <div class="meter mt-2"><span id="barQCI" style="width:0%"></span></div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <div class="text-sm font-medium">Stress Flags</div>
+        <div id="flags" class="mt-2 flex flex-wrap gap-2"></div>
+      </div>
+    </section>
+
+    <!-- 3) Outcome -->
+    <section class="card p-5">
+      <h2 class="text-lg font-semibold mb-2">3) Outcome</h2>
+      <div id="outcome" class="text-2xl font-extrabold">–</div>
+      <p id="outcomeNote" class="text-sm text-slate-600 mt-1">—</p>
+      <div class="mt-3 flex gap-2">
+        <button id="btnDownload" class="pill bg-emerald-600 text-white" disabled>Download Receipt (JSON)</button>
+        <button id="btnShowReceipt" class="pill bg-slate-200" disabled>Show Receipt</button>
+      </div>
+    </section>
+
+    <!-- 4) Receipt -->
+    <section class="card p-5">
+      <details>
+        <summary class="text-lg font-semibold">4) Receipt (immutable audit)</summary>
+        <pre id="receipt" class="mono text-xs bg-slate-900 text-slate-100 p-3 rounded mt-3 overflow-auto"></pre>
+      </details>
+    </section>
+
+    <!-- Help -->
+    <section class="card p-5">
+      <details open>
+        <summary class="text-lg font-semibold">How this demo maps to the Crystal Engine</summary>
+        <div class="grid md:grid-cols-2 gap-4 mt-3">
+          <div>
+            <h3 class="font-semibold">Moral Weight Engine (inner lattice)</h3>
+            <ul class="list-disc ml-5 text-sm">
+              <li><b>Risk Scalar (R)</b>: stakes×|harm|×(1+uncertainty)</li>
+              <li><b>Witness Kernel (WCS)</b>: average(cred×agreement)</li>
+              <li><b>Doctrine Stress</b>: flip signs (good↔evil, benefit↔harm, truth↔deception) and flag paradox/truth-erosion</li>
+              <li><b>Receipts</b>: SHA-256 signature, time, scores, flags</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold">Cosmic Quadrants & Outcome</h3>
+            <ul class="list-disc ml-5 text-sm">
+              <li><b>QCI</b>: toy “contradiction” check (keywords). In production: embeddings vs canonical pole vectors.</li>
+              <li><b>Outcome</b>: <b>ALLOW</b> / <b>COSIGN_REQUIRED</b> / <b>BLOCK</b> based on thresholds + flags.</li>
+              <li><b>Inversion Test</b>: runs the operator to ensure the system refuses inverted logic silently passing.</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    // ---------- Utility ----------
+    const $ = (sel)=>document.querySelector(sel);
+    const enc = new TextEncoder();
+
+    async function sha256Hex(obj){
+      const data = typeof obj==='string' ? obj : JSON.stringify(obj);
+      const buf = await crypto.subtle.digest('SHA-256', enc.encode(data));
+      return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    function pct(x){ return Math.max(0, Math.min(100, Math.round(x*100))); }
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+    // ---------- Core metrics (demo versions matching our spec) ----------
+    function riskScalar(stakes, harm, uncertainty){
+      const w = stakes==='HIGH' ? 1.0 : stakes==='MED' ? 0.6 : 0.3;
+      const R = Math.max(0, w * Math.abs(harm) * (1 + uncertainty));
+      return clamp01(R); // clamp for visualization
+    }
+
+    function witnessKernel(testimonies){
+      if(!Array.isArray(testimonies) || testimonies.length===0) return 0;
+      const s = testimonies.map(t => (t.cred||0)*(t.agreement||0))
+                           .reduce((a,b)=>a+b,0) / testimonies.length;
+      return clamp01(s);
+    }
+
+    function doctrineStress(doctrineScore, harm, truth){
+      // Inversion operator
+      const inv = { doctrineScore: -doctrineScore, harm: -harm, truth: 1 - truth };
+      const paradoxDoctrine = (doctrineScore > 0.5 && inv.doctrineScore > 0.5);
+      const truthErosion = Math.abs(2*truth - 1) < 0.05;
+      const flags = [];
+      if (paradoxDoctrine) flags.push('PARADOX_DOCTRINE');
+      if (truthErosion) flags.push('TRUTH_EROSION');
+      return { inverted: inv, flags };
+    }
+
+    function quadrantContradictionIndex(labels){
+      // Toy heuristic: if "paradise" mentions collapse/distortion, or "heaven" mentions chaos, raise strain
+      const red = /collapse|distortion|chaos|cruelty|deceit/i;
+      let c = 0;
+      if (red.test(labels?.paradise||'')) c += 0.5;
+      if (red.test(labels?.heaven||''))   c += 0.5;
+      return clamp01(c);
+    }
+
+    function decideOutcome({stakes, R, WCS, QCI, flags}){
+      // Simple triage policy
+      const highFlag = flags.some(f => ['PARADOX_DOCTRINE','TRUTH_EROSION','CRYSTAL_GEOM_STRAIN'].includes(f));
+      if (highFlag || R > 0.8 || (stakes==='HIGH' && WCS < 0.3)) return { outcome:'BLOCK', note:'High stress or low witness coherence under high stakes.' };
+      if (R > 0.5 || WCS < 0.5 || QCI > 0.3) return { outcome:'COSIGN_REQUIRED', note:'Moderate stress; require credentialed co-sign.' };
+      return { outcome:'ALLOW', note:'No high stress signals; proceed with caution and logging.' };
+    }
+
+    // ---------- UI helpers ----------
+    function setMeter(idVal, idBar, v){
+      $(idVal).textContent = v.toFixed(2);
+      $(idBar).style.width = pct(v)+'%';
+    }
+    function setFlags(list){
+      const el = $('#flags'); el.innerHTML = '';
+      if (!list.length) { el.innerHTML = '<span class="badge bg-emerald-50 text-emerald-700">None</span>'; return; }
+      list.forEach(f=>{
+        const span = document.createElement('span');
+        span.className = 'badge bg-amber-50 text-amber-800';
+        span.textContent = f;
+        el.appendChild(span);
+      });
+    }
+    function colorOutcome(txt){
+      const el = $('#outcome');
+      el.textContent = txt;
+      el.classList.remove('text-emerald-700','text-amber-700','text-rose-700');
+      if (txt==='ALLOW') el.classList.add('text-emerald-700');
+      if (txt==='COSIGN_REQUIRED') el.classList.add('text-amber-700');
+      if (txt==='BLOCK') el.classList.add('text-rose-700');
+    }
+
+    // ---------- Receipt ----------
+    async function buildReceipt({context, proposal, stakes, scores, flags, qciFlag}){
+      const payload = {
+        crystal_id: 'ce-'+Date.now(),
+        timestamp: new Date().toISOString(),
+        actor: { user: 'local-demo', agent: 'crystal-engine-demo' },
+        context_hash: await sha256Hex(context),
+        doctrine_id: 'doctrine-v0',
+        witness_refs: (context?.testimonies||[]).map((t,i)=>({id:'t'+i, cred:t.cred, agreement:t.agreement})),
+        scores,
+        stress_flags: [...flags, ...(qciFlag?['CRYSTAL_GEOM_STRAIN']:[])],
+        outcome: 'TBD',
+        cosigners: []
+      };
+      payload.signature = await sha256Hex(payload);
+      return payload;
+    }
+
+    function downloadJSON(filename, obj){
+      const blob = new Blob([JSON.stringify(obj,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ---------- Wiring ----------
+    let lastReceipt = null;
+
+    async function runAssess({applyInversion=false}={}){
+      // Parse inputs
+      let context, proposal, quadrants;
+      try {
+        context = JSON.parse($('#context').value);
+        proposal = JSON.parse($('#proposal').value);
+        quadrants = JSON.parse($('#quadrants').value);
+      } catch (e) { alert('Invalid JSON in one of the inputs.'); return; }
+      const stakes = $('#stakes').value;
+
+      // Optionally apply inversion to the proposal (for stress test)
+      let p = {...proposal};
+      let invFlags = [];
+      if (applyInversion){
+        const inv = doctrineStress(p.doctrineScore??0, p.harm??0, p.truth??0.5);
+        invFlags = inv.flags;
+        p = { ...p, harm: inv.inverted.harm, truth: inv.inverted.truth, doctrineScore: inv.inverted.doctrineScore };
+      } else {
+        invFlags = doctrineStress(p.doctrineScore??0, p.harm??0, p.truth??0.5).flags; // even without applying, check erosion/paradox
+      }
+
+      // Metrics
+      const R   = riskScalar(stakes, p.harm??0, p.uncertainty??0);
+      const WCS = witnessKernel(context.testimonies||[]);
+      const QCI = quadrantContradictionIndex(quadrants);
+      setMeter('#mR','#barR',R);
+      setMeter('#mWCS','#barWCS',WCS);
+      setMeter('#mQCI','#barQCI',QCI);
+
+      const qciFlag = QCI > 0.3;
+      const flags = [...invFlags, ...(qciFlag?['CRYSTAL_GEOM_STRAIN']:[])];
+      setFlags(flags);
+
+      // Outcome
+      const { outcome, note } = decideOutcome({stakes, R, WCS, QCI, flags});
+      colorOutcome(outcome);
+      $('#outcomeNote').textContent = note;
+
+      // Receipt
+      const scores = { R, WCS, QCI, deltaR: 0, deltaT: (2*(p.truth??0)-1) };
+      lastReceipt = await buildReceipt({context, proposal:p, stakes, scores, flags:invFlags, qciFlag});
+      lastReceipt.outcome = outcome;
+
+      $('#btnDownload').disabled = false;
+      $('#btnShowReceipt').disabled = false;
+      $('#receipt').textContent = JSON.stringify(lastReceipt, null, 2);
+    }
+
+    // Buttons
+    $('#btnAssess').addEventListener('click', ()=>runAssess());
+    $('#btnInvert').addEventListener('click', ()=>runAssess({applyInversion:true}));
+    $('#btnDownload').addEventListener('click', ()=>{
+      if (!lastReceipt) return;
+      downloadJSON(`${lastReceipt.crystal_id}.json`, lastReceipt);
+    });
+    $('#btnShowReceipt').addEventListener('click', ()=>{
+      if (!lastReceipt) return;
+      const d = $('#receipt'); d.parentElement.open = true;
+      d.textContent = JSON.stringify(lastReceipt, null, 2);
+      d.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    // Examples
+    $('#btnExampleLow').addEventListener('click', ()=>{
+      $('#stakes').value = 'LOW';
+      $('#context').value = JSON.stringify({testimonies:[{cred:0.8, agreement:0.9},{cred:0.7, agreement:0.8}]}, null, 2);
+      $('#proposal').value = JSON.stringify({harm:0.2, uncertainty:0.1, truth:0.95, doctrineScore:0.7}, null, 2);
+      $('#quadrants').value = JSON.stringify({
+        heaven:"mercy, truth, hope",
+        hell:"cruelty, deceit",
+        paradise:"rest, stewardship",
+        abyss:"risk, uncertainty"
+      }, null, 2);
+    });
+
+    $('#btnExampleRisk').addEventListener('click', ()=>{
+      $('#stakes').value = 'HIGH';
+      $('#context').value = JSON.stringify({testimonies:[{cred:0.6, agreement:0.5}]}, null, 2);
+      $('#proposal').value = JSON.stringify({harm:-0.9, uncertainty:0.4, truth:0.55, doctrineScore:0.6}, null, 2);
+      $('#quadrants').value = JSON.stringify({
+        heaven:"aspiration, truth, mercy",
+        hell:"cruelty, domination",
+        paradise:"collapse, distortion",   // contradiction to trigger QCI
+        abyss:"chaos, breakdown"
+      }, null, 2);
+    });
+  </script>
+</body>
+</html>
